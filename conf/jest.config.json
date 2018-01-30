@@ -1,0 +1,5 @@
+{
+  "rootDir": "../",
+  "collectCoverage": true,
+  "verbose": true
+}

@@ -2,9 +2,17 @@
   Напишите функцию, которая принимает 1 аргумент и возварщает его тип
 */
 function getDataType(variable) {
-
+    return typeof variable;
 }
 
+
+export const DataType = {
+    primitive: 'primitive',
+    primitiveSpecial: 'primitive-special',
+    objectArray: 'object-array',
+    objectFunction: 'object-function',
+    object: 'object',
+};
 /*
   Напишите функцию, которая принимает 1 аргумент и возвращает:
   'primitive' если тип данных относится к примивным
@@ -14,7 +22,22 @@ function getDataType(variable) {
   'object-function' - если функция
 */
 function getDataTypePseudoName(variable) {
-
+    const type = typeof variable;
+    if (['boolean', 'number', 'string'].includes(type)) {
+        return DataType.primitive;
+    }
+    if ([null, undefined].includes(variable)) {
+        return DataType.primitiveSpecial;
+    }
+    if (Array.isArray(variable)) {
+        return DataType.objectArray;
+    }
+    if (type === 'function') {
+        return DataType.objectFunction;
+    }
+    if (type === 'object') {
+        return DataType.object;
+    }
 }
 
 
@@ -25,7 +48,13 @@ function getDataTypePseudoName(variable) {
   и -1 в другом случае
 */
 function compareByType(a, b) {
-
+    if (a === b) {
+        return 1;
+    }
+    if (a == b) {
+        return 0;
+    }
+    return -1;
 }
 
 // Numbers
@@ -37,7 +66,10 @@ function compareByType(a, b) {
   в любом другом случае возврвщвет -1
 */
 function increase(value) {
-
+    if (typeof value === 'number') {
+        return value + 1;
+    }
+    return -1;
 }
 
 /*
@@ -45,9 +77,11 @@ function increase(value) {
   и в случае если аргумент не Infinity или NaN возвращает строку 'safe' иначе 'danger'
 */
 function testForSafeNumber(value) {
-
+    if (Number.isNaN(value) || !Number.isFinite(value)) {
+        return 'danger';
+    }
+    return 'safe';
 }
-
 
 
 // Strings
@@ -57,7 +91,7 @@ function testForSafeNumber(value) {
   и возвращает массив из елементов строки разделенных по пробелу ' '
 */
 function stringToArray(str) {
-
+    return str.split(' ');
 }
 
 
@@ -66,7 +100,7 @@ function stringToArray(str) {
   и возвращает часть этой строки до первой запятой
 */
 function getStringPart(str) {
-
+    return str.split(',')[0];
 }
 
 /*
@@ -75,7 +109,13 @@ function getStringPart(str) {
   false в противоположном случае
 */
 function isSingleSymbolMatch(str, symbol) {
-
+    const index = str.indexOf(symbol);
+    if (index !== -1) {
+        if (str.indexOf(symbol, index + 1) === -1) {
+            return index;
+        }
+    }
+    return false;
 }
 
 /*
@@ -85,7 +125,7 @@ function isSingleSymbolMatch(str, symbol) {
   или строку разделенную "-" если не задан
 */
 function join(array, separator) {
-
+    return array.join(separator || '-');
 }
 
 
@@ -94,7 +134,7 @@ function join(array, separator) {
   и возвращает один состоящий из элементов перового и второго (последовательно сначала первый потом второй)
 */
 function glue(arrA, arrB) {
-
+    return [...arrA, ...arrB];
 }
 
 
@@ -103,7 +143,7 @@ function glue(arrA, arrB) {
   и возвращает другой массив отсортированный от большего к меньшему
 */
 function order(arr) {
-
+    return arr.sort().reverse();
 }
 
 
@@ -112,7 +152,7 @@ function order(arr) {
   и возвращает другой без чисел которые меньше 0
 */
 function removeNegative(arr) {
-
+    return arr.filter(number => number >= 0);
 }
 
 /*
@@ -122,7 +162,7 @@ function removeNegative(arr) {
   [1,2,3], [1, 3] => [2]
 */
 function without(arrA, arrB) {
-
+    return arrA.filter(number => !arrB.includes(number));
 }
 
 /*
@@ -133,7 +173,19 @@ function without(arrA, arrB) {
   '12/6' => 2
 */
 function calcExpression(expression) {
-
+    const [str, _first, operator, _second] = /(.+?)\s*([*\-+/]){1}\s*(.+)/.exec(expression);
+    const [first, second] = [+_first, +_second];
+    switch (operator) { // eslint-disable-line default-case
+        // to get more coverage
+        case '*':
+            return first * second;
+        case '+':
+            return first + second;
+        case '-':
+            return first - second;
+        case '/':
+            return first / second;
+    }
 }
 
 /*
@@ -145,7 +197,24 @@ function calcExpression(expression) {
   '100>5' => true
 */
 function calcComparison(expression) {
-
+    const [str, _first, operator, _second] = /(.+?)\s*(>=|<=|>|<|=)\s*(.+)/.exec(expression);
+    const [first, second] = [+_first, +_second];
+    if ([first, second].includes(NaN)) {
+        throw new Error('Can not compare');
+    }
+    switch (operator) { // eslint-disable-line default-case
+        // to get more coverage
+        case '=':
+            return first === second;
+        case '>':
+            return first > second;
+        case '<':
+            return first < second;
+        case '>=':
+            return first >= second;
+        case '<=':
+            return first <= second;
+    }
 }
 
 /*
@@ -157,24 +226,31 @@ function calcComparison(expression) {
   { a: 1, b: 2 }, '.c' => exception
 */
 function evalKey(obj, expression) {
-
+    const [str, key, rest] = /.(.+?)(.*)/.exec(expression);
+    if (key in obj) {
+        const value = obj[key];
+        if (rest) {
+            return evalKey(value, rest);
+        }
+        return value;
+    }
 }
 
 export default {
-  getDataType,
-  getDataTypePseudoName,
-  compareByType,
-  increase,
-  testForSafeNumber,
-  stringToArray,
-  getStringPart,
-  isSingleSymbolMatch,
-  join,
-  glue,
-  order,
-  removeNegative,
-  without,
-  calcExpression,
-  calcComparison,
-  evalKey
+    getDataType,
+    getDataTypePseudoName,
+    compareByType,
+    increase,
+    testForSafeNumber,
+    stringToArray,
+    getStringPart,
+    isSingleSymbolMatch,
+    join,
+    glue,
+    order,
+    removeNegative,
+    without,
+    calcExpression,
+    calcComparison,
+    evalKey,
 };

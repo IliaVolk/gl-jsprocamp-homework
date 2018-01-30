@@ -3,12 +3,13 @@
     "eslint-config-airbnb"
   ],
   "rules": {
+    "linebreak-style": "off",
     "import/extensions": ["off"],
     "import/first": ["error", null],
     "import/order": "warn",
     "class-methods-use-this": ["error"],
     "no-param-reassign": ["error", { "props": false }],
-    "indent": ["warn", 2, {"SwitchCase": 1}],
+    "indent": ["error", 4, {"SwitchCase": 1}],
     "max-len": ["warn", {
       "code": 110
     }],
