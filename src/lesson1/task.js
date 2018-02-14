@@ -66,7 +66,7 @@ function compareByType(a, b) {
   в любом другом случае возврвщвет -1
 */
 function increase(value) {
-    if (typeof value === 'number') {
+    if (typeof value === 'number' && !Number.isNaN(value)) {
         return value + 1;
     }
     return -1;
@@ -173,7 +173,7 @@ function without(arrA, arrB) {
   '12/6' => 2
 */
 function calcExpression(expression) {
-    const [str, _first, operator, _second] = /(.+?)\s*([*\-+/]){1}\s*(.+)/.exec(expression);
+    const [str, _first, operator, _second] = /(.+?)([*\-+/]){1}(.+)/.exec(expression.replace(new RegExp(' ', 'g'), ''));
     const [first, second] = [+_first, +_second];
     switch (operator) { // eslint-disable-line default-case
         // to get more coverage
@@ -197,7 +197,7 @@ function calcExpression(expression) {
   '100>5' => true
 */
 function calcComparison(expression) {
-    const [str, _first, operator, _second] = /(.+?)\s*(>=|<=|>|<|=)\s*(.+)/.exec(expression);
+    const [str, _first, operator, _second] = /(.+?)(>=|<=|>|<|=)(.+)/.exec(expression.replace(new RegExp(' ', 'g'), ''));
     const [first, second] = [+_first, +_second];
     if ([first, second].includes(NaN)) {
         throw new Error('Can not compare');
@@ -226,7 +226,9 @@ function calcComparison(expression) {
   { a: 1, b: 2 }, '.c' => exception
 */
 function evalKey(obj, expression) {
-    const [str, key, rest] = /.(.+?)(.*)/.exec(expression);
+    if (!expression) throw new Error();
+    const [str, key, rest] = /.(.+?)(.*)/.exec(expression.replace(new RegExp(' ', 'g'), ''));
+    console.log(obj, expression, key, rest);
     if (key in obj) {
         const value = obj[key];
         if (rest) {
