@@ -50,8 +50,8 @@ export function logger(topic) {
 /*
  Implement left to right compose function
  */
-export function compose(g, f) {
-    return arg => f(g(arg));
+export function compose(...args) {
+    return arg => args.reduce((arg, f) => f(arg), arg);
 }
 
 /*
@@ -65,7 +65,9 @@ export function compose(g, f) {
  sumWith4(5) // 9
  */
 export function partial(fn, ...args) {
-    return fn.length <= args.length ? fn(...args) : (...newArgs) => partial(fn.bind(null, ...args), ...newArgs);
+    return fn.length <= args.length
+        ? fn(...args)
+        : (...newArgs) => partial(fn.bind(null, ...args), ...newArgs);
 }
 
 export default {
