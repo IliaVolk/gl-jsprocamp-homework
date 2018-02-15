@@ -67,31 +67,24 @@ class Game {
 }
 
 class Unit {
-    get life() {
-        return this.impl.life;
-    }
-    get damage() {
-        return this.impl.damage;
-    }
-    constructor(charClass, availableClasses) {
-        const Cls = availableClasses.find(cls => cls.name.toLowerCase() === charClass);
-        if (!Cls) throw new Error('Incorrect character class provided');
-        this.impl = new Cls();
+    constructor(life, damage) {
+        this.life = life;
+        this.damage = damage;
     }
     getCharClass() {
-        return this.impl.constructor.name;
+        return this.constructor.name;
     }
     attack(target) {
-        target.impl.life -= this.damage;
-        if (target.impl.life <= 0) {
-            target.impl.life = 0;
+        target.life -= this.damage;
+        if (target.life <= 0) {
+            target.life = 0;
         }
     }
 }
 
 class Hero extends Unit {
-    constructor(name, charClass) {
-        super(charClass, HERO_CLASSES);
+    constructor(name, life, damage) {
+        super(life, damage);
         this.name = name;
     }
 
@@ -111,9 +104,6 @@ class Hero extends Unit {
 }
 
 class Monster extends Unit {
-    constructor(charClass) {
-        super(charClass, MONSTER_CLASSES);
-    }
     getName() {
         return `I am ${this.getCharClass()} I don\`t have name`;
     }
@@ -127,57 +117,69 @@ class Monster extends Unit {
 
 /* Game Population mechanism should go below */
 
-class Warrior {
-    constructor() {
-        this.life = 30;
-        this.damage = 10;
+class Warrior extends Hero {
+    constructor(name) {
+        super(name, 30, 10);
     }
 }
 
-class Rogue {
-    constructor() {
-        this.life = 25;
-        this.damage = 3;
+class Rogue extends Hero {
+    constructor(name) {
+        super(name, 25, 3);
     }
 }
 
-class Sorcerer {
-    constructor() {
-        this.life = 20;
-        this.damage = 5;
+class Sorcerer extends Hero {
+    constructor(name) {
+        super(name, 20, 5);
     }
 }
 
 const HERO_CLASSES = [Warrior, Rogue, Sorcerer];
 
 
-class Zombie {
+class Zombie extends Monster {
     constructor() {
-        this.life = 8;
-        this.damage = 6;
+        super(8, 6);
     }
 }
 
-class Skeleton {
+class Skeleton extends Monster {
     constructor() {
-        this.life = 10;
-        this.damage = 6;
+        super(10, 6);
     }
 }
 
-class Holem {
+class Holem extends Monster {
     constructor() {
-        this.life = 15;
-        this.damage = 6;
+        super(15, 6);
     }
 }
 
 const MONSTER_CLASSES = [Zombie, Skeleton, Holem];
 
+function getClassByCharClass(charClass, classes) {
+    const Cls = classes.find(cls => cls.name.toLowerCase() === charClass);
+    if (!Cls) throw new Error('Incorrect character class provided');
+    return Cls;
+}
+
+const HeroConstructor = new Proxy(Hero, {
+    construct(target, [name, charClass]) {
+        return new (getClassByCharClass(charClass, HERO_CLASSES))(name);
+    },
+});
+
+const MonsterConstructor = new Proxy(Monster, {
+    construct(target, [charClass]) {
+        return new (getClassByCharClass(charClass, MONSTER_CLASSES))();
+    },
+});
+
 /* End of your solution for Game Population mechanism */
 
 export default {
     Game,
-    Hero,
-    Monster,
+    Hero: HeroConstructor,
+    Monster: MonsterConstructor,
 };
