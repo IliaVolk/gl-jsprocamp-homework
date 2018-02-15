@@ -29,5 +29,8 @@
     "test": "jest --config=conf/jest.config.js",
     "debug": "node --inspect-brk node_modules/.bin/jest --runInBand  --config=conf/jest.config.js",
     "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "isomorphic-fetch": "^2.2.1"
   }
 }
