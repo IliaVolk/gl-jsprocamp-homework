@@ -47,7 +47,7 @@ class Game {
         return 'Hero is dead';
     }
     addHero(hero) {
-        if (hero instanceof Monster) {
+        if (!(hero instanceof Hero)) {
             throw new Error('Only hero instance can be hero');
         }
         if (this.hero) {
@@ -56,7 +56,7 @@ class Game {
         this.hero = hero;
     }
     addMonster(monster) {
-        if (monster instanceof Hero) {
+        if (!(monster instanceof Monster)) {
             throw new Error('Only monster Instances can become monsters');
         }
         if (this.monsters.length === 2) {
@@ -92,7 +92,7 @@ class Hero extends Unit {
         return this.name;
     }
     attack(target) {
-        if (target instanceof Hero) {
+        if (!(target instanceof Monster)) {
             return 'I will attack only monsters';
         }
         super.attack(target);
@@ -108,7 +108,7 @@ class Monster extends Unit {
         return `I am ${this.getCharClass()} I don\`t have name`;
     }
     attack(target) {
-        if (target instanceof Monster) {
+        if (!(target instanceof Hero)) {
             return 'I will attack only Hero';
         }
         super.attack(target);

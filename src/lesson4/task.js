@@ -1,6 +1,13 @@
 const normalEquals = (a, b) => (Number.isNaN(a) && Number.isNaN(b)) || (a === b);
 
 
+class Entry {
+    constructor(key, value) {
+        this.key = key;
+        this.value = value;
+    }
+}
+
 class TheMap {
     get size() {
         return this._entries.length;
@@ -17,39 +24,39 @@ class TheMap {
     set(key, value) {
         const existedEntry = this.get(key);
         if (existedEntry) {
-            existedEntry[1] = value;
+            existedEntry.value = value;
         } else {
-            this._entries.push([key, value]);
+            this._entries.push(new Entry(key, value));
         }
     }
     has(key) {
         return !!this.get(key);
     }
     get(key) {
-        return this._entries.find(entry => normalEquals(key, entry[0]));
+        return this._entries.find(entry => normalEquals(key, entry.key));
     }
     delete(key) {
-        this._entries.splice(this._entries.findIndex(entry => normalEquals(entry[0], key)), 1);
+        this._entries.splice(this._entries.findIndex(entry => normalEquals(entry.key, key)), 1);
     }
     forEach(fn) {
-        this._entries.forEach(([key, value]) => fn(value, key));
+        this._entries.forEach(({key, value}) => fn(value, key));
     }
     clear() {
         this._entries.length = 0;
     }
     * entries() {
-        for (const entry of this._entries) {
-            yield entry;
+        for (const {key, value} of this._entries) {
+            yield [key, value];
         }
     }
 
     * keys() {
-        for (const [key] of this._entries) {
+        for (const {key} of this._entries) {
             yield key;
         }
     }
     * values() {
-        for (const [, value] of this._entries) {
+        for (const {value} of this._entries) {
             yield value;
         }
     }
